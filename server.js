@@ -5,13 +5,19 @@ const swaggerUI = require('swagger-ui-express');
 const swaggerSpecs = require('./swagger');
 const io = require('socket.io')(http, {
     cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
-    }
+        origin: "*", // Permite todas las conexiones
+        methods: ["GET", "POST"],
+        credentials: true,
+        transports: ['websocket', 'polling']
+    },
+    allowEIO3: true
 });
 const cors = require('cors');
 
-app.use(cors());
+app.use(cors({
+    origin: '*', // Permite todas las conexiones
+    credentials: true
+}));
 app.use(express.json());
 // Agregar esta línea para servir archivos estáticos
 app.use(express.static('public'));
@@ -108,6 +114,6 @@ io.on('connection', (socket) => {
     });
 });
 
-http.listen(PORT, () => {
+http.listen(PORT, '0.0.0.0', () => {
     console.log(`Servidor corriendo en puerto ${PORT}`);
 });
