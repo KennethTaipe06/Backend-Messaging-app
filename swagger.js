@@ -10,7 +10,7 @@ const swaggerOptions = {
         },
         servers: [
             {
-                url: process.env.SERVER_URL || 'http://localhost:3000',
+                url: process.env.SERVER_URL || 'http://localhost:3000', //cambiar esta ip a la del servidor
                 description: 'Server URL'
             },
         ],
