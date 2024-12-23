@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Grupal</title>
+    <script src="https://cdn.socket.io/4.5.1/socket.io.min.js"></script>
+</head>
+<body>
+    <div id="chat">
+        <div id="usuarios"></div>
+        <div id="mensajes"></div>
+        <input type="text" id="nombre" placeholder="Tu nombre">
+        <button onclick="unirse()">Unirse al chat</button>
+        <br>
+        <input type="text" id="mensaje" placeholder="Mensaje">
+        <button onclick="enviarMensaje()">Enviar</button>
+    </div>
+
+    <script>
+        const socket = io('http://localhost:3000');
+        let nombreUsuario = '';
+
+        function unirse() {
+            nombreUsuario = document.getElementById('nombre').value;
+            if (nombreUsuario) {
+                socket.emit('unirse', nombreUsuario);
+                document.getElementById('nombre').disabled = true;
+            }
+        }
+
+        function enviarMensaje() {
+            const texto = document.getElementById('mensaje').value;
+            if (texto && nombreUsuario) {
+                socket.emit('enviarMensaje', {
+                    usuario: nombreUsuario,
+                    texto: texto
+                });
+                document.getElementById('mensaje').value = '';
+            }
+        }
+
+        socket.on('mensaje', (mensaje) => {
+            const mensajesDiv = document.getElementById('mensajes');
+            mensajesDiv.innerHTML += `<p><strong>${mensaje.usuario}:</strong> ${mensaje.texto}</p>`;
+        });
+
+        socket.on('usuarios', (usuarios) => {
+            const usuariosDiv = document.getElementById('usuarios');
+            usuariosDiv.innerHTML = '<h3>Usuarios conectados:</h3>' + 
+                usuarios.map(u => u.nombre).join('<br>');
+        });
+    </script>
+</body>
+</html>
